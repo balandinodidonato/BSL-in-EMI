@@ -3,6 +3,7 @@
 # Dependecies
 import glob, json
 import sys
+from datetime import timedelta
 
 # Gather file path
 participant = str(sys.argv[1])
@@ -39,14 +40,27 @@ for object in hand_data:
         hand_left_keypoints_2d.append(people["hand_left_keypoints_2d"])
         hand_right_keypoints_2d.append(people["hand_right_keypoints_2d"])
 
+FPS = 50.0
 # tests on wether the two JSON contains the same number of objects
 if(len(face_data)==len(face_data)):
     for frame in range(len(face_data)):
+         
+        frame_count = frame
+        td = str(timedelta(seconds=(frame_count / FPS)))
         body = pose_keypoints_2d[frame]
         f_data = face_keypoints_2d[frame]
         hl_data = hand_left_keypoints_2d[frame]
         hr_data = hand_right_keypoints_2d[frame]
-        data_list.append({"participant":participant, "song":song, "frame":frame, "pose_keypoints_2d":body, "face_keypoints_2d":f_data, "hand_left_keypoints_2d":hl_data, "hand_right_keypoints_2d":hr_data})
+        data_list.append({
+            "participant":participant,
+            "song":song, 
+            "time":td,
+            "frame":frame, 
+            "pose_keypoints_2d":body,
+            "face_keypoints_2d":f_data,
+            "hand_left_keypoints_2d":hl_data,
+            "hand_right_keypoints_2d":hr_data
+            })
 
     filename = "../data/" + song + "_" + participant + ".json"
     with open(filename, 'w') as f:
