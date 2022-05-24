@@ -10,6 +10,7 @@ participant = str(sys.argv[1])
 song = str(sys.argv[2])
 face_file_path = sys.argv[3] # Path to face data set
 hand_file_path = sys.argv[4] # Path to face data set
+FPS = float(sys.argv[5]) # framerate
 
 # Lists and variables
 pose_keypoints_2d = []
@@ -40,7 +41,7 @@ for object in hand_data:
         hand_left_keypoints_2d.append(people["hand_left_keypoints_2d"])
         hand_right_keypoints_2d.append(people["hand_right_keypoints_2d"])
 
-FPS = 50.0
+
 # tests on wether the two JSON contains the same number of objects
 if(len(face_data)==len(face_data)):
     for frame in range(len(face_data)):
