@@ -18,10 +18,6 @@ face_keypoints_2d = []
 hand_left_keypoints_2d = []
 hand_right_keypoints_2d = []
 
-pose_fod = []
-pose_fod_max = 0
-pose_fod_min = 2000
-
 data_out = []
 keypoints_IDs = [[0,  "Nose"], [1,  "Neck"], [2,  "RShoulder"], [3,  "RElbow"], [4,  "RWrist"], [5,  "LShoulder"], [6,  "LElbow"], [7,  "LWrist"], [8,  "MidHip"], [9,  "RHip"],[10, "RKnee"], [11, "RAnkle"], [12, "LHip"], [13, "LKnee"], [14, "LAnkle"], [15, "REye"], [16, "LEye"], [17, "REar"], [18, "LEar"], [19, "LBigToe"], [20, "LSmallToe"], [21, "LHeel"], [22, "RBigToe"], [23, "RSmallToe"], [24, "RHeel"], [25, "Background"]]
 
@@ -43,27 +39,29 @@ for data_ in pose_keypoints_2d:
     pose_keypoints_2d_split.append(group(data_, 3))
 
 # ------ first order difference by frame ------ #
+
+
 def fod(x0, y0, x1, y1):
     fod = math.sqrt(pow((x1-x0),2)+pow((y1-y0),2))
     return float(fod)
 
-pose_fod_angle = []
-pose_fod_dist = []
-pose_fod_data = []
+
+pose_fod = []
 
 previous = pose_keypoints_2d_split[0]
 for keypoints in pose_keypoints_2d_split:
     fod_keypoints_frame = []
     for index in range(0, len(keypoints)):
-        pose_fod_dist.append(fod(previous[index][0], keypoints[index][0], previous[index][1], keypoints[index][0]))
+        pose_fod_data = []
+        
+        pose_fod_dist = fod(previous[index][0], keypoints[index][0], previous[index][1], keypoints[index][0])
         angle_radians = math.atan2(keypoints[index][0]-previous[index][0], keypoints[index][1]-previous[index][0])
         angle_degrees = math.degrees(angle_radians)
-        pose_fod_angle.append(angle_degrees)
-    
-    pose_fod_data.append(pose_fod_angle)
-    pose_fod_data.append(pose_fod_dist)
-    pose_fod.append(fod_keypoints_frame)
+        pose_fod_data.append(pose_fod_dist)
+        pose_fod_data.append(angle_degrees)
+        fod_keypoints_frame.append(pose_fod_data)
 
+    pose_fod.append(fod_keypoints_frame)
     previous = keypoints
 
 # ------ Distances ------ #
@@ -176,6 +174,7 @@ if (original_data_lenght == len(pose_fod) == len(wrists_distances) == len(lwrist
         keypoints_LWrist_nose_distance = lwrist_nose_distances[frame]
         keypoints_RWrist_nose_distance = rwrist_nose_distances[frame]
         keypoints_direction = segments[frame]
+
         FPS = 50.0
         frame_count = frame
         td = str(timedelta(seconds=(frame_count / FPS)))
