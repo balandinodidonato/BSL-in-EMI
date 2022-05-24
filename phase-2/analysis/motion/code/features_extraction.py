@@ -23,6 +23,7 @@ pose_fod_max = 0
 pose_fod_min = 2000
 
 data_out = []
+keypoints_IDs = [[0,  "Nose"], [1,  "Neck"], [2,  "RShoulder"], [3,  "RElbow"], [4,  "RWrist"], [5,  "LShoulder"], [6,  "LElbow"], [7,  "LWrist"], [8,  "MidHip"], [9,  "RHip"],[10, "RKnee"], [11, "RAnkle"], [12, "LHip"], [13, "LKnee"], [14, "LAnkle"], [15, "REye"], [16, "LEye"], [17, "REar"], [18, "LEar"], [19, "LBigToe"], [20, "LSmallToe"], [21, "LHeel"], [22, "RBigToe"], [23, "RSmallToe"], [24, "RHeel"], [25, "Background"]]
 
 # Returns JSON object as a dictionary
 original_data = json.load(data_file)
@@ -67,8 +68,8 @@ for keypoints in pose_keypoints_2d_split:
 
 # ------ Distances ------ #
 wrists_distances = []
-wrist0_nose_distances = []
-wrist1_nose_distances = []
+lwrist_nose_distances = []
+rwrist_nose_distances = []
 
 for keypoints in pose_keypoints_2d_split:
     wrist_0_x = keypoints[4][0]
@@ -89,22 +90,22 @@ for keypoints in pose_keypoints_2d_split:
     wrists_distances.append(wrists_data)
 
     # wrist 0 nose disance/angle
-    wrist0_nose_data = []
-    wrist0_nose_distance = math.sqrt(pow((nose_x-wrist_0_x),2)+pow((nose_y-wrist_0_y),2))
-    wrist0_nose_angle_radians = math.atan2(wrist_0_x-nose_x, wrist_0_y-nose_y)
-    wrist0_nose_angle_degrees = math.degrees(wrist0_nose_angle_radians)
-    wrist0_nose_data.append(wrist0_nose_distance)
-    wrist0_nose_data.append(wrist0_nose_angle_degrees)
-    wrist0_nose_distances.append(wrist0_nose_data)
+    lwrist_nose_data = []
+    lwrist_nose_distance = math.sqrt(pow((nose_x-wrist_0_x),2)+pow((nose_y-wrist_0_y),2))
+    lwrist_nose_angle_radians = math.atan2(wrist_0_x-nose_x, wrist_0_y-nose_y)
+    lwrist_nose_angle_degrees = math.degrees(lwrist_nose_angle_radians)
+    lwrist_nose_data.append(lwrist_nose_distance)
+    lwrist_nose_data.append(lwrist_nose_angle_degrees)
+    lwrist_nose_distances.append(lwrist_nose_data)
 
     # wrist 0 nose disance/angle
-    wrist1_nose_data = []
-    wrist1_nose_distance = math.sqrt(pow((nose_x-wrist_1_x),2)+pow((nose_y-wrist_1_y),2))
-    wrist1_nose_angle_radians = math.atan2(wrist_1_x-nose_x, wrist_1_y-nose_y)
-    wrist1_nose_angle_degrees = math.degrees(wrist1_nose_angle_radians)
-    wrist1_nose_data.append(wrist1_nose_distance)
-    wrist1_nose_data.append(wrist1_nose_angle_degrees)
-    wrist1_nose_distances.append(wrist1_nose_data)
+    rwrist_nose_data = []
+    rwrist_nose_distance = math.sqrt(pow((nose_x-wrist_1_x),2)+pow((nose_y-wrist_1_y),2))
+    rwrist_nose_angle_radians = math.atan2(wrist_1_x-nose_x, wrist_1_y-nose_y)
+    rwrist_nose_angle_degrees = math.degrees(rwrist_nose_angle_radians)
+    rwrist_nose_data.append(rwrist_nose_distance)
+    rwrist_nose_data.append(rwrist_nose_angle_degrees)
+    rwrist_nose_distances.append(rwrist_nose_data)
 
 # ------ Directions ------ #
 def direction(x0, y0, x1, y1):
@@ -168,12 +169,12 @@ for keypoints_index in range(0, len(pose_keypoints_2d_split)):
     segments.append(segment_data)
 
 # Creates files
-if (original_data_lenght == len(pose_fod) == len(wrists_distances) == len(wrist0_nose_distances) == len(segments)):
+if (original_data_lenght == len(pose_fod) == len(wrists_distances) == len(lwrist_nose_distances) == len(segments)):
     for frame in range(original_data_lenght):
         keypoints_fod = pose_fod[frame]
         keypoints_wrists_distance = wrists_distances[frame]
-        keypoints_wrist0_nose_distance = wrist0_nose_distances[frame]
-        keypoints_wrist1_nose_distance = wrist1_nose_distances[frame]
+        keypoints_LWrist_nose_distance = lwrist_nose_distances[frame]
+        keypoints_RWrist_nose_distance = rwrist_nose_distances[frame]
         keypoints_direction = segments[frame]
         FPS = 50.0
         frame_count = frame
@@ -186,11 +187,11 @@ if (original_data_lenght == len(pose_fod) == len(wrists_distances) == len(wrist0
             "frame":frame, 
             "keypoints_fod":keypoints_fod, 
             "keypoints_wrists_distance_angle":keypoints_wrists_distance, 
-            "keypoints_wrist0_nose_distance_angle":keypoints_wrist0_nose_distance,
-            "keypoints_wrist1_nose_distance_angle":keypoints_wrist1_nose_distance, 
+            "keypoints_LWrist_nose_distance_angle":keypoints_LWrist_nose_distance,
+            "keypoints_RWrist_nose_distance_angle":keypoints_RWrist_nose_distance, 
             "keypoints_direction":keypoints_direction # segment_change, direction_text, delta_angle, angle_degrees
             })
 
-    filename = song + "_" + participant + "_features.json"
+    filename = "../data/" + song + "_" + participant + "_features.json"
     with open(filename, 'w') as f:
         json.dump(data_out, f)
