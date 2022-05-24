@@ -49,38 +49,23 @@ hand_data_tot = len(hand_data)
 # iterates through the JSON with the face data and extracts the face keypoints
 
 for object in face_data:
-    version_in_face_data =  "version" in face_data
-    if version_in_face_data:
-        pople_in_object =  "people" in object
-        if pople_in_object:
-            for people in object["people"]:
-                face_keypoints_2d.append(people["face_keypoints_2d"])
-        else: 
-            face_keypoints_2d.append(empty_face_keypoints_2d)
-    else: 
+    if len(object["people"]):
+        for people in object["people"]:
+            face_keypoints_2d.append(people["face_keypoints_2d"])
+    else:
         face_keypoints_2d.append(empty_face_keypoints_2d)
 
 # iterates through the JSON with the hand data and extracts the hand keypoints
-
 for object in hand_data:
-    version_in_hand_data =  "version" in hand_data
-    if version_in_hand_data:
-        pople_in_object =  "people" in object
-        if pople_in_object:
-            for people in object["people"]:
-                pose_keypoints_2d.append(people["pose_keypoints_2d"])
-                hand_left_keypoints_2d.append(people["hand_left_keypoints_2d"])
-                hand_right_keypoints_2d.append(people["hand_right_keypoints_2d"])
-        else:
-            pose_keypoints_2d.append(empty_pose_keypoints_2d)
-            hand_left_keypoints_2d.append(empty_hand_keypoints_2d)
-            hand_right_keypoints_2d.append(empty_hand_keypoints_2d)
-    else: 
+    if len(object["people"]):
+        for people in object["people"]:
+            pose_keypoints_2d.append(people["pose_keypoints_2d"])
+            hand_left_keypoints_2d.append(people["hand_left_keypoints_2d"])
+            hand_right_keypoints_2d.append(people["hand_right_keypoints_2d"])
+    else:
         pose_keypoints_2d.append(empty_pose_keypoints_2d)
         hand_left_keypoints_2d.append(empty_hand_keypoints_2d)
         hand_right_keypoints_2d.append(empty_hand_keypoints_2d)
-
-# tests on wether the two JSON contains the same number of objects
 
 if(len(pose_keypoints_2d)==len(hand_left_keypoints_2d)==len(hand_right_keypoints_2d)==len(face_keypoints_2d)==face_data_tot==hand_data_tot):
     for frame in range(len(face_data)):

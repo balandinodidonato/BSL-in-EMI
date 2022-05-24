@@ -134,7 +134,6 @@ for keypoints_index in range(0, len(pose_keypoints_2d_split)):
             if delta_angle > angle_threshold:
                 segment_change = 1
                 segment_change_count = segment_change_count + 1
-                print(segment_change_count)
                 # direction of displacement frame by frame on the horizontal and vertical axis
                 direction_text = direction(previous_window[index][0], previous_window[index][1], keypoints[index][0], keypoints[index][1])
             else:
@@ -174,3 +173,7 @@ if (original_data_lenght == len(pose_fod) == len(wrists_distances) == len(lwrist
     filename = "../data/" + song + "_" + participant + "_features.json"
     with open(filename, 'w') as f:
         json.dump(data_out, f)
+
+    print("Feature extraction SUCCESS")
+else:
+    print("ERROR: feature extraction failed. Data count does not match.")
