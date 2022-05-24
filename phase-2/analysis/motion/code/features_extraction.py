@@ -18,10 +18,6 @@ face_keypoints_2d = []
 hand_left_keypoints_2d = []
 hand_right_keypoints_2d = []
 
-pose_fod = []
-pose_fod_max = 0
-pose_fod_min = 2000
-
 data_out = []
 keypoints_IDs = [[0,  "Nose"], [1,  "Neck"], [2,  "RShoulder"], [3,  "RElbow"], [4,  "RWrist"], [5,  "LShoulder"], [6,  "LElbow"], [7,  "LWrist"], [8,  "MidHip"], [9,  "RHip"],[10, "RKnee"], [11, "RAnkle"], [12, "LHip"], [13, "LKnee"], [14, "LAnkle"], [15, "REye"], [16, "LEye"], [17, "REar"], [18, "LEar"], [19, "LBigToe"], [20, "LSmallToe"], [21, "LHeel"], [22, "RBigToe"], [23, "RSmallToe"], [24, "RHeel"], [25, "Background"]]
 
@@ -43,27 +39,25 @@ for data_ in pose_keypoints_2d:
     pose_keypoints_2d_split.append(group(data_, 3))
 
 # ------ first order difference by frame ------ #
+
+
 def fod(x0, y0, x1, y1):
     fod = math.sqrt(pow((x1-x0),2)+pow((y1-y0),2))
     return float(fod)
 
-pose_fod_angle = []
-pose_fod_dist = []
-pose_fod_data = []
+
+pose_fod = []
 
 previous = pose_keypoints_2d_split[0]
 for keypoints in pose_keypoints_2d_split:
     fod_keypoints_frame = []
     for index in range(0, len(keypoints)):
-        pose_fod_dist.append(fod(previous[index][0], keypoints[index][0], previous[index][1], keypoints[index][0]))
+        pose_fod_dist = fod(previous[index][0], keypoints[index][0], previous[index][1], keypoints[index][0])
         angle_radians = math.atan2(keypoints[index][0]-previous[index][0], keypoints[index][1]-previous[index][0])
         angle_degrees = math.degrees(angle_radians)
-        pose_fod_angle.append(angle_degrees)
-    
-    pose_fod_data.append(pose_fod_angle)
-    pose_fod_data.append(pose_fod_dist)
-    pose_fod.append(fod_keypoints_frame)
+        fod_keypoints_frame.append({"keypoint_no":keypoints_IDs[index][0],"keypoint_name":keypoints_IDs[index][1], "distance":pose_fod_dist, "angle":angle_degrees})
 
+    pose_fod.append(fod_keypoints_frame)
     previous = keypoints
 
 # ------ Distances ------ #
@@ -77,35 +71,25 @@ for keypoints in pose_keypoints_2d_split:
     wrist_1_x = keypoints[7][0]
     wrist_1_y = keypoints[7][1]
     nose_x = keypoints[0][0]
-    nose_y = keypoints[0][1]
-    wrists_data = []
-    
+    nose_y = keypoints[0][1]    
 
     # wrists distance/angle
     wrists_distance = math.sqrt(pow((wrist_1_x-wrist_0_x),2)+pow((wrist_1_y-wrist_0_y),2))
     wrists_angle_radians = math.atan2(wrist_0_x-wrist_1_x, wrist_0_y-wrist_1_y)
     wrists_angle_degrees = math.degrees(wrists_angle_radians)
-    wrists_data.append(wrists_distance)
-    wrists_data.append(wrists_angle_degrees)
-    wrists_distances.append(wrists_data)
+    wrists_distances.append({"wrists_distance":wrists_distance, "wrists_distance":wrists_angle_degrees})
 
     # wrist 0 nose disance/angle
-    lwrist_nose_data = []
     lwrist_nose_distance = math.sqrt(pow((nose_x-wrist_0_x),2)+pow((nose_y-wrist_0_y),2))
     lwrist_nose_angle_radians = math.atan2(wrist_0_x-nose_x, wrist_0_y-nose_y)
     lwrist_nose_angle_degrees = math.degrees(lwrist_nose_angle_radians)
-    lwrist_nose_data.append(lwrist_nose_distance)
-    lwrist_nose_data.append(lwrist_nose_angle_degrees)
-    lwrist_nose_distances.append(lwrist_nose_data)
+    lwrist_nose_distances.append({"keypoint_no":keypoints_IDs[4][0],"keypoint_name":keypoints_IDs[4][1], "lwrist_nose_distance":lwrist_nose_distance, "lwrist_nose_angle_degrees":lwrist_nose_angle_degrees})
 
     # wrist 0 nose disance/angle
-    rwrist_nose_data = []
     rwrist_nose_distance = math.sqrt(pow((nose_x-wrist_1_x),2)+pow((nose_y-wrist_1_y),2))
     rwrist_nose_angle_radians = math.atan2(wrist_1_x-nose_x, wrist_1_y-nose_y)
     rwrist_nose_angle_degrees = math.degrees(rwrist_nose_angle_radians)
-    rwrist_nose_data.append(rwrist_nose_distance)
-    rwrist_nose_data.append(rwrist_nose_angle_degrees)
-    rwrist_nose_distances.append(rwrist_nose_data)
+    rwrist_nose_distances.append({"keypoint_no":keypoints_IDs[7][0],"keypoint_name":keypoints_IDs[7][1],"r_wrist_nose_distance":rwrist_nose_distance, "r_wrist_nose_distance":rwrist_nose_distance})
 
 # ------ Directions ------ #
 def direction(x0, y0, x1, y1):
@@ -138,7 +122,6 @@ for keypoints_index in range(0, len(pose_keypoints_2d_split)):
         previous_window = pose_keypoints_2d_split[keypoints_index-previous_frame_no] # takes 5th previous sample
 
         for index in range(0, len(keypoints)):
-            segment_k_data = []
 
             # angle between of the keypoint displacement frame by frame
             previous_angle_radians = math.atan2(keypoints[index][0]-previous_window[index][0], keypoints[index][1]-previous_window[index][0])
@@ -157,13 +140,8 @@ for keypoints_index in range(0, len(pose_keypoints_2d_split)):
             else:
                 direction_text = "none"
                 segment_change = 0
-
-            segment_k_data.append(segment_change)
-            segment_k_data.append(direction_text)
-            segment_k_data.append(delta_angle)
-            segment_k_data.append(angle_degrees)
             
-            segment_data.append(segment_k_data)
+            segment_data.append({"keypoint_no":keypoints_IDs[index][0],"keypoint_name":keypoints_IDs[index][1], "change":segment_change, "direction":direction_text, "angle_delta":delta_angle, "angle_degree":angle_degrees})
 
     previous = keypoints
     segments.append(segment_data)
@@ -176,6 +154,7 @@ if (original_data_lenght == len(pose_fod) == len(wrists_distances) == len(lwrist
         keypoints_LWrist_nose_distance = lwrist_nose_distances[frame]
         keypoints_RWrist_nose_distance = rwrist_nose_distances[frame]
         keypoints_direction = segments[frame]
+
         FPS = 50.0
         frame_count = frame
         td = str(timedelta(seconds=(frame_count / FPS)))
