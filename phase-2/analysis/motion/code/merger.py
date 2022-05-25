@@ -19,6 +19,13 @@ face_IDs = [
     [42, "LEye_R"], [43, "LEye_U_1"], [44, "LEye_U_0"], [45, "LEye_L"], [46, "LEye_B_0"], [47, "LEye_B_1"],
     [48, "OMouth_R"], [49, "OMouth_U_0"], [50, "OMouth_U_1"], [51, "OMouth_U_2"], [52, "OMouth_U_3"], [53, "OMouth_U_4"], [54, "OMouth_L"], [55, "OMouth_B_4"], [56, "OMouth_B_3"], [57, "OMouth_B_2"], [58, "OMouth_B_1"], [59, "OMouth_B_0"],
     [60, "IMouth_R"], [61, "IMouth_U_0"], [62, "IMouth_U_1"], [63, "IMouth_U_3"], [64, "IMouth_L"], [65, "IMouth_B_2"], [66, "IMouth_B_1"], [67, "IMouth_B_0"], [68, "REye"], [69, "LEye"]]
+hand_IDs = [
+    [0, "Palm"], 
+    [1, "Thumb_0"], [2, "Thumb_1"], [3, "Thumb_2"], [4, "Thumb_3"],
+    [5, "Index_0"], [6, "Index_1"], [7, "Index_2"], [8, "Index_3"],
+    [9, "Midle_0"], [10, "Middle_1"], [11, "Middle_2"], [12, "Middle_3"],
+    [13, "Ring_0"], [14, "Ring_1"], [15, "Ring_2"], [16, "Ring_3"],
+    [17, "Little_0"], [18, "Little_1"], [19, "Little_2"], [20, "Little_3"]]
 
 # Preparation of empty arrays 
 empty_pose_keypoints_2d =[]
@@ -108,11 +115,20 @@ if(len(pose_keypoints_2d)==len(hand_left_keypoints_2d)==len(hand_right_keypoints
             keypoints[index].append(keypoints_IDs[index][0])
             keypoints[index].append(keypoints_IDs[index][1])
     
-    count = 0
     for keypoints_face in face_keypoints_2d_split:
         for index in range(len(keypoints_face)):
             keypoints_face[index].append(face_IDs[index][0])
             keypoints_face[index].append(face_IDs[index][1])
+
+    for keypoints_hand_left in hand_left_keypoints_2d_split:
+        for index in range(len(keypoints_hand_left)):
+            keypoints_hand_left[index].append(hand_IDs[index][0])
+            keypoints_hand_left[index].append(hand_IDs[index][1])
+
+    for keypoints_hand_right in hand_right_keypoints_2d_split:
+        for index in range(len(keypoints_hand_right)):
+            keypoints_hand_right[index].append(hand_IDs[index][0])
+            keypoints_hand_right[index].append(hand_IDs[index][1])
     
     for frame in range(len(face_data)):
         td = str(timedelta(seconds=(frame / FPS)))
