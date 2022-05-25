@@ -13,7 +13,7 @@ data_file = open(data_file_path)
 
 # lists
 pose_keypoints_2d = []
-pose_keypoints_2d_split = []
+pose_keypoints_2d = []
 face_keypoints_2d = []
 hand_left_keypoints_2d = []
 hand_right_keypoints_2d = []
@@ -31,13 +31,6 @@ for index in original_data:
     hand_left_keypoints_2d.append(index["hand_left_keypoints_2d"])
     hand_right_keypoints_2d.append(index["hand_right_keypoints_2d"])    
     
-# split list
-def group(theList, N):
-    return [theList[n:n+N] for n in range(0, len(theList), N)]
-
-for data_ in pose_keypoints_2d:
-    pose_keypoints_2d_split.append(group(data_, 3))
-
 # ------ first order difference by frame ------ #
 
 
@@ -45,11 +38,9 @@ def fod(x0, y0, x1, y1):
     fod = math.sqrt(pow((x1-x0),2)+pow((y1-y0),2))
     return float(fod)
 
-
 pose_fod = []
-
-previous = pose_keypoints_2d_split[0]
-for keypoints in pose_keypoints_2d_split:
+previous = pose_keypoints_2d[0]
+for keypoints in pose_keypoints_2d:
     fod_keypoints_frame = []
     for index in range(0, len(keypoints)):
         pose_fod_dist = fod(previous[index][0], keypoints[index][0], previous[index][1], keypoints[index][0])
@@ -65,7 +56,7 @@ wrists_distances = []
 lwrist_nose_distances = []
 rwrist_nose_distances = []
 
-for keypoints in pose_keypoints_2d_split:
+for keypoints in pose_keypoints_2d:
     wrist_0_x = keypoints[4][0]
     wrist_0_y = keypoints[4][1]
     wrist_1_x = keypoints[7][0]
@@ -112,14 +103,14 @@ previous_frame_no = 2 # in frames
 angle_threshold = 45 # in degrees
 segment_change_count = 0
 
-for keypoints_index in range(0, len(pose_keypoints_2d_split)):
+for keypoints_index in range(0, len(pose_keypoints_2d)):
     directions_second = []
     directions_angle = []
     segment_data = []
-    keypoints = pose_keypoints_2d_split[keypoints_index]
+    keypoints = pose_keypoints_2d[keypoints_index]
 
     if keypoints_index > previous_frame_no:
-        previous_window = pose_keypoints_2d_split[keypoints_index-previous_frame_no] # takes 5th previous sample
+        previous_window = pose_keypoints_2d[keypoints_index-previous_frame_no] # takes 5th previous sample
 
         for index in range(0, len(keypoints)):
 

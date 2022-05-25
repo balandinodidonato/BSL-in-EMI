@@ -5,6 +5,7 @@ import glob, json
 from sre_constants import SUCCESS
 import sys
 from datetime import timedelta
+from tokenize import group
 
 # Preparation of empty arrays 
 empty_pose_keypoints_2d =[]
@@ -67,7 +68,27 @@ for object in hand_data:
         hand_left_keypoints_2d.append(empty_hand_keypoints_2d)
         hand_right_keypoints_2d.append(empty_hand_keypoints_2d)
 
+
 if(len(pose_keypoints_2d)==len(hand_left_keypoints_2d)==len(hand_right_keypoints_2d)==len(face_keypoints_2d)==face_data_tot==hand_data_tot):
+    def group(theList, N):
+        return [theList[n:n+N] for n in range(0, len(theList), N)]
+    
+    pose_keypoints_2d_split = []
+    for keypoint_body in pose_keypoints_2d:
+        pose_keypoints_2d_split.append(group(keypoint_body, 3))
+
+    hand_left_keypoints_2d_split = []
+    for hand_left_keypoint in hand_left_keypoints_2d:
+        hand_left_keypoints_2d_split.append(group(hand_left_keypoint, 3))
+
+    hand_right_keypoints_2d_split = []
+    for hand_right_keypoint in hand_right_keypoints_2d:
+        hand_right_keypoints_2d_split.append(group(hand_right_keypoint, 3))
+
+    face_keypoints_2d_split = []
+    for face_keypoint_2d_split in face_keypoints_2d:
+        face_keypoints_2d_split.append(group(face_keypoint_2d_split, 3))
+
     for frame in range(len(face_data)):
         td = str(timedelta(seconds=(frame / FPS)))
         data_list.append({
@@ -75,10 +96,10 @@ if(len(pose_keypoints_2d)==len(hand_left_keypoints_2d)==len(hand_right_keypoints
             "song":song, 
             "time":td,
             "frame":frame, 
-            "pose_keypoints_2d":pose_keypoints_2d[frame],
-            "face_keypoints_2d":face_keypoints_2d[frame],
-            "hand_left_keypoints_2d":hand_left_keypoints_2d[frame],
-            "hand_right_keypoints_2d":hand_right_keypoints_2d[frame]
+            "pose_keypoints_2d":pose_keypoints_2d_split[frame],
+            "face_keypoints_2d":face_keypoints_2d_split[frame],
+            "hand_left_keypoints_2d":hand_left_keypoints_2d_split[frame],
+            "hand_right_keypoints_2d":hand_right_keypoints_2d_split[frame]
             })
 
     filename = "../data/" + song + "_" + participant + ".json"
