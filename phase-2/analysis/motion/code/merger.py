@@ -91,7 +91,7 @@ if(len(pose_keypoints_2d)==len(hand_left_keypoints_2d)==len(hand_right_keypoints
     for face_keypoint_2d_split in face_keypoints_2d:
         face_keypoints_2d_split.append(group(face_keypoint_2d_split, 3))
 
-        
+    ## Adds body part name
     for keypoints in pose_keypoints_2d_split:
         for index in range(len(keypoints)):
             keypoints[index].append(keypoints_IDs[index][1])
