@@ -7,6 +7,8 @@ import sys
 from datetime import timedelta
 from tokenize import group
 
+keypoints_IDs = [[0,  "Nose"], [1,  "Neck"], [2,  "RShoulder"], [3,  "RElbow"], [4,  "RWrist"], [5,  "LShoulder"], [6,  "LElbow"], [7,  "LWrist"], [8,  "MidHip"], [9,  "RHip"],[10, "RKnee"], [11, "RAnkle"], [12, "LHip"], [13, "LKnee"], [14, "LAnkle"], [15, "REye"], [16, "LEye"], [17, "REar"], [18, "LEar"], [19, "LBigToe"], [20, "LSmallToe"], [21, "LHeel"], [22, "RBigToe"], [23, "RSmallToe"], [24, "RHeel"], [25, "Background"]]
+
 # Preparation of empty arrays 
 empty_pose_keypoints_2d =[]
 for index in range(75):
@@ -88,6 +90,12 @@ if(len(pose_keypoints_2d)==len(hand_left_keypoints_2d)==len(hand_right_keypoints
     face_keypoints_2d_split = []
     for face_keypoint_2d_split in face_keypoints_2d:
         face_keypoints_2d_split.append(group(face_keypoint_2d_split, 3))
+
+        
+    for keypoints in pose_keypoints_2d_split:
+        for index in range(len(keypoints)):
+            keypoints[index].append(keypoints_IDs[index][1])
+
 
     for frame in range(len(face_data)):
         td = str(timedelta(seconds=(frame / FPS)))
