@@ -7,10 +7,12 @@ from datetime import timedelta
 participant = str(sys.argv[1])
 song = str(sys.argv[2])
 data_file_path = sys.argv[3]
+frameRate = float(sys.argv[4]) # framerate
 
 # Opening JSON file
-data_file = open(data_file_path)
-
+with open(data_file_path, 'r') as f:
+  original_data = json.load(f)
+  
 # lists
 pose_keypoints_2d = []
 pose_keypoints_2d = []
@@ -22,14 +24,11 @@ data_out = []
 keypoints_IDs = [[0,  "Nose"], [1,  "Neck"], [2,  "RShoulder"], [3,  "RElbow"], [4,  "RWrist"], [5,  "LShoulder"], [6,  "LElbow"], [7,  "LWrist"], [8,  "MidHip"], [9,  "RHip"],[10, "RKnee"], [11, "RAnkle"], [12, "LHip"], [13, "LKnee"], [14, "LAnkle"], [15, "REye"], [16, "LEye"], [17, "REar"], [18, "LEar"], [19, "LBigToe"], [20, "LSmallToe"], [21, "LHeel"], [22, "RBigToe"], [23, "RSmallToe"], [24, "RHeel"], [25, "Background"]]
 
 # Returns JSON object as a dictionary
-original_data = json.load(data_file)
-original_data_lenght = len(original_data)
-
-for index in original_data:
-    pose_keypoints_2d.append(index["pose_keypoints_2d"])
-    face_keypoints_2d.append(index["face_keypoints_2d"])
-    hand_left_keypoints_2d.append(index["hand_left_keypoints_2d"])
-    hand_right_keypoints_2d.append(index["hand_right_keypoints_2d"])    
+for keypoint in original_data["data"]:
+    pose_keypoints_2d.append(keypoint["pose_keypoints_2d"])
+    face_keypoints_2d.append(keypoint["face_keypoints_2d"])
+    hand_left_keypoints_2d.append(keypoint["hand_left_keypoints_2d"])
+    hand_right_keypoints_2d.append(keypoint["hand_right_keypoints_2d"])    
     
 # ------ first order difference by frame ------ #
 
@@ -40,15 +39,21 @@ def fod(x0, y0, x1, y1):
 
 pose_fod = []
 previous = pose_keypoints_2d[0]
+
 for keypoints in pose_keypoints_2d:
     fod_keypoints_frame = []
+    distance_total = 0
+    angle_total = 0
     for index in range(0, len(keypoints)):
         pose_fod_dist = fod(previous[index][0], keypoints[index][0], previous[index][1], keypoints[index][0])
         angle_radians = math.atan2(keypoints[index][0]-previous[index][0], keypoints[index][1]-previous[index][0])
         angle_degrees = math.degrees(angle_radians)
+        distance_total = distance_total + pose_fod_dist
+        angle_total = angle_total + angle_degrees
+
         fod_keypoints_frame.append({"keypoint_no":keypoints_IDs[index][0],"keypoint_name":keypoints_IDs[index][1], "distance":pose_fod_dist, "angle":angle_degrees})
 
-    pose_fod.append(fod_keypoints_frame)
+    pose_fod.append({"distance_total":distance_total, "angle_total":angle_total, "keypoints": fod_keypoints_frame})
     previous = keypoints
 
 # ------ Distances ------ #
@@ -125,6 +130,7 @@ for keypoints_index in range(0, len(pose_keypoints_2d)):
             if delta_angle > angle_threshold:
                 segment_change = 1
                 segment_change_count = segment_change_count + 1
+                #print(segment_change_count)
                 # direction of displacement frame by frame on the horizontal and vertical axis
                 direction_text = direction(previous_window[index][0], previous_window[index][1], keypoints[index][0], keypoints[index][1])
             else:
@@ -136,24 +142,27 @@ for keypoints_index in range(0, len(pose_keypoints_2d)):
     previous = keypoints
     segments.append(segment_data)
 
+
+original_data_lenght = (len(original_data["data"]))
+
 # Creates files
-if (original_data_lenght == len(pose_fod) == len(wrists_distances) == len(lwrist_nose_distances) == len(segments)):
+if (original_data_lenght == len(pose_fod) == len(wrists_distances) == len(lwrist_nose_distances) == len(segments)): # checks that no data were lost
     for frame in range(original_data_lenght):
         keypoints_fod = pose_fod[frame]
         keypoints_wrists_distance = wrists_distances[frame]
         keypoints_LWrist_nose_distance = lwrist_nose_distances[frame]
         keypoints_RWrist_nose_distance = rwrist_nose_distances[frame]
         keypoints_direction = segments[frame]
+        raw = original_data["data"][frame]
 
-        FPS = 50.0
         frame_count = frame
-        td = str(timedelta(seconds=(frame_count / FPS)))
+        td = str(timedelta(seconds=(frame_count / frameRate)))
 
         data_out.append({
-            "participant":participant, 
-            "song":song, 
             "time":td,
             "frame":frame, 
+            "time":td,
+            "raw":raw,
             "keypoints_fod":keypoints_fod, 
             "keypoints_wrists_distance_angle":keypoints_wrists_distance, 
             "keypoints_LWrist_nose_distance_angle":keypoints_LWrist_nose_distance,
@@ -161,9 +170,16 @@ if (original_data_lenght == len(pose_fod) == len(wrists_distances) == len(lwrist
             "keypoints_direction":keypoints_direction # segment_change, direction_text, delta_angle, angle_degrees
             })
 
+    final_out = {
+        "data":data_out, 
+        "frameRate":frameRate,
+        "participant":participant, 
+        "song":song
+        }
+
     filename = "../data/" + song + "_" + participant + "_features.json"
     with open(filename, 'w') as f:
-        json.dump(data_out, f)
+        json.dump(final_out, f)
 
     print("Feature extraction SUCCESS")
 else:

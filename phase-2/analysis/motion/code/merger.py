@@ -6,6 +6,7 @@ from sre_constants import SUCCESS
 import sys
 from datetime import timedelta
 from tokenize import group
+import os
 
 keypoints_IDs = [[0,  "Nose"], [1,  "Neck"], [2,  "RShoulder"], [3,  "RElbow"], [4,  "RWrist"], [5,  "LShoulder"], [6,  "LElbow"], [7,  "LWrist"], [8,  "MidHip"], [9,  "RHip"],[10, "RKnee"], [11, "RAnkle"], [12, "LHip"], [13, "LKnee"], [14, "LAnkle"], [15, "REye"], [16, "LEye"], [17, "REar"], [18, "LEar"], [19, "LBigToe"], [20, "LSmallToe"], [21, "LHeel"], [22, "RBigToe"], [23, "RSmallToe"], [24, "RHeel"], [25, "Background"]]
 
@@ -26,6 +27,7 @@ hand_IDs = [
     [9, "Midle_0"], [10, "Middle_1"], [11, "Middle_2"], [12, "Middle_3"],
     [13, "Ring_0"], [14, "Ring_1"], [15, "Ring_2"], [16, "Ring_3"],
     [17, "Little_0"], [18, "Little_1"], [19, "Little_2"], [20, "Little_3"]]
+
 
 # Preparation of empty arrays 
 empty_pose_keypoints_2d =[]
@@ -55,24 +57,51 @@ hand_right_keypoints_2d = []
 data_list = []
 face_data = []
 hand_data = []
+count_face_files = 0
+count_hand_files = 1
 
-for f in glob.glob(face_file_path+"/*.json"):
-    with open(f,) as infile:
-        face_data.append(json.load(infile))
+no_of_files = (len([name for name in os.listdir(face_file_path) if os.path.isfile(os.path.join(face_file_path, name))]))
 
-for f in glob.glob(hand_file_path+"/*.json"):
-    with open(f,) as infile:
-        hand_data.append(json.load(infile))
+
+# Rename for data ordering
+def reorder(path):
+    for i in range(0, 13, 1):
+        for f in glob.glob(path+"/*.json"):
+            new_filename = f.replace("_0","_")
+            os.rename(f,new_filename)
+
+    for f in glob.glob(path+"/*.json"):
+        new_filename = f.replace("__","_0_")
+        os.rename(f,new_filename)
+
+reorder(face_file_path)
+reorder(hand_file_path)
+
+# Extract and append data
+for index in range(0, no_of_files-1):
+    currentFacePath = str(face_file_path+"/"+song+"_"+participant+"_"+str(index)+"_keypoints.json")
+    with open(currentFacePath, 'r') as f:
+        data = json.load(f)
+        face_data.append(data)
+
+    currentHandPath = str(hand_file_path+"/"+song+"_"+participant+"_"+str(index)+"_keypoints.json")
+    with open(currentHandPath, 'r') as f:
+        data = json.load(f)
+        hand_data.append(data)
 
 face_data_tot = len(face_data)
 hand_data_tot = len(hand_data)
+   
 
 # iterates through the JSON with the face data and extracts the face keypoints
 
 for object in face_data:
     if len(object["people"]):
         for people in object["people"]:
-            face_keypoints_2d.append(people["face_keypoints_2d"])
+            if len(people["face_keypoints_2d"]):
+                face_keypoints_2d.append(people["face_keypoints_2d"])
+            else:
+                face_keypoints_2d.append(empty_face_keypoints_2d)
     else:
         face_keypoints_2d.append(empty_face_keypoints_2d)
 
@@ -80,9 +109,20 @@ for object in face_data:
 for object in hand_data:
     if len(object["people"]):
         for people in object["people"]:
-            pose_keypoints_2d.append(people["pose_keypoints_2d"])
-            hand_left_keypoints_2d.append(people["hand_left_keypoints_2d"])
-            hand_right_keypoints_2d.append(people["hand_right_keypoints_2d"])
+            if len(people["pose_keypoints_2d"]):
+                pose_keypoints_2d.append(people["pose_keypoints_2d"])
+            else:
+                pose_keypoints_2d.append(empty_pose_keypoints_2d)
+            
+            if len(people["hand_left_keypoints_2d"]):
+                hand_left_keypoints_2d.append(people["hand_left_keypoints_2d"])
+            else:
+                hand_left_keypoints_2d.append(empty_hand_keypoints_2d)
+            if people["hand_right_keypoints_2d"]:
+                hand_right_keypoints_2d.append(people["hand_right_keypoints_2d"])
+            else:
+                hand_right_keypoints_2d.append(empty_hand_keypoints_2d)
+            
     else:
         pose_keypoints_2d.append(empty_pose_keypoints_2d)
         hand_left_keypoints_2d.append(empty_hand_keypoints_2d)
@@ -106,10 +146,11 @@ if(len(pose_keypoints_2d)==len(hand_left_keypoints_2d)==len(hand_right_keypoints
         hand_right_keypoints_2d_split.append(group(hand_right_keypoint, 3))
 
     face_keypoints_2d_split = []
-    for face_keypoint_2d_split in face_keypoints_2d:
-        face_keypoints_2d_split.append(group(face_keypoint_2d_split, 3))
+    for face_keypoint in face_keypoints_2d:
+        face_keypoints_2d_split.append(group(face_keypoint, 3))
 
-    ## Adds body part name
+    
+     ## Adds body part name
     for keypoints in pose_keypoints_2d_split:
         for index in range(len(keypoints)):
             keypoints[index].append(keypoints_IDs[index][0])
@@ -133,8 +174,6 @@ if(len(pose_keypoints_2d)==len(hand_left_keypoints_2d)==len(hand_right_keypoints
     for frame in range(len(face_data)):
         td = str(timedelta(seconds=(frame / FPS)))
         data_list.append({
-            "participant":participant,
-            "song":song, 
             "time":td,
             "frame":frame, 
             "pose_keypoints_2d":pose_keypoints_2d_split[frame],
@@ -143,9 +182,18 @@ if(len(pose_keypoints_2d)==len(hand_left_keypoints_2d)==len(hand_right_keypoints
             "hand_right_keypoints_2d":hand_right_keypoints_2d_split[frame]
             })
 
+    data_out = {
+        "participant":participant,
+        "song":song, 
+        "data":data_list,
+        "framerate":FPS
+        }
+        
     filename = "../data/" + song + "_" + participant + ".json"
     with open(filename, 'w') as f:
-        json.dump(data_list, f)
+        json.dump(data_out, f)
+
     print("Merger SUCCESS")
 else:
     print("ERROR: data totals do not match")
+
