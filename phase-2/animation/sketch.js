@@ -2,7 +2,7 @@
 const scaleSize = 0.3
 var frame_i = 0;
 let mySound;
-let dataPath = "../analysis/motion/data/Apparat_Goodbye_P1_features.json";
+let dataPath = "../analysis/motion/data/Apparat_Goodbye_P1.json";
 let title = "P1 Apparat - Goodbye";
 let soundPath = "../media/audio/Apparat_Goodbye.mp3"
 var animationWidth;
@@ -33,7 +33,7 @@ function draw() {
   rect(0, 0, animationWidth, animationHeight);
 
   fill(200)
-  text(title + "  " + str(data_in.data[frame_i].raw.time), 10, 20, width, 200)
+  text(title + "  " + str(data_in.data[frame_i].time), 10, 20, width, 200)
 
   if(frame_i < data_in.data.length){
 
