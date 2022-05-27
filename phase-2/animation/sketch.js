@@ -2,7 +2,7 @@
 const scaleSize = 0.3
 var frame_i = 0;
 let mySound;
-let dataPath = "../analysis/motion/data/Apparat_Goodbye_P1.json";
+let dataPath = "../analysis/motion/data/Apparat_Goodbye_P2_features.json";
 let title = "P1 Apparat - Goodbye";
 let soundPath = "../media/audio/Apparat_Goodbye.mp3"
 var animationWidth;
@@ -37,8 +37,6 @@ function draw() {
 
   if(frame_i < data_in.data.length){
 
-    
-    
     if(frame_i==0) mySound.play()
 
     body_keypoints = data_in.data[frame_i].raw.pose_keypoints_2d
