@@ -13,6 +13,7 @@ let leftHandDrawing = []
 let rightHandDrawing = []
 let trail = false
 let trailLength
+let playbackrate = 1;
 
 function preload(){
   mySound = loadSound(soundPath);
@@ -43,21 +44,35 @@ function draw() {
 
   fill(200)
   
+  /*
   if (frame_i>trailLength) {
     trail = true
   }
+  */
 
+  
   if(frame_i < data_in.data.length){
 
-    if(frame_i<1) mySound.play()
-
+    // sincs audio playback rate to visualisation
+    if (frame_i<1) mySound.play()
+    playbackrate = getFrameRate()/data_in.frameRate
+    if (playbackrate < 100) mySound.rate(playbackrate)
+  
     textSize(40*scaleSize)
-    text(title + "  " + str(data_in.data[frame_i].time), 10, 20, width, 200)
+    text(title +  "        FPS: " + str(int(getFrameRate()))  + "        Time: " + str(data_in.data[frame_i].time), 10, 20, width, 200)
 
     drawFullSkelethon();
     drawFod(frame_i);
   }
   frame_i++;
+
+  if(playbackrate == 0) {
+    playbackrate = 1
+  }
+  else {
+    
+    
+  }
 }
 
 
@@ -65,16 +80,35 @@ function draw() {
 
 function drawFullSkelethon(){
 
-  for (let key_i = 0; key_i < skelethonDrawing[frame_i].length; key_i++) {
-    skelethonDrawing[frame_i][key_i].show(1)
-  }
-
   if(trail){
     for (let index_trail = 0; index_trail < trailLength; index_trail++) {
       for (let key_i = 0; key_i < skelethonDrawing[frame_i].length; key_i++) {
         skelethonDrawing[frame_i-index_trail][key_i].show(1/index_trail)
       }
     }
+    /*
+    for (let index_trail = 0; index_trail < trailLength; index_trail++) {
+      for (let key_i = 0; key_i < leftHandDrawing[frame_i].length; key_i++) {
+        leftHandDrawing[frame_i-index_trail][key_i].show(1/index_trail)
+      }
+    }
+
+    for (let index_trail = 0; index_trail < trailLength; index_trail++) {
+      for (let key_i = 0; key_i < rightHandDrawing[frame_i].length; key_i++) {
+        rightHandDrawing[frame_i-index_trail][key_i].show(1/index_trail)
+      }
+    }
+    
+    for (let index_trail = 0; index_trail < trailLength; index_trail++) {
+      for (let key_i = 0; key_i < faceDrawing[frame_i].length; key_i++) {
+        faceDrawing[frame_i-index_trail][key_i].show(1/index_trail)
+      }
+    }
+    */
+  }
+
+  for (let key_i = 0; key_i < skelethonDrawing[frame_i].length; key_i++) {
+    skelethonDrawing[frame_i][key_i].show(1)
   }
 
   for (let key_i = 0; key_i < faceDrawing[frame_i].length; key_i++) {
