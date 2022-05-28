@@ -1,5 +1,5 @@
 
-const scaleSize = 0.5
+const scaleSize = 1
 let frame_i = 0;
 let mySound;
 let dataPath = "../analysis/motion/data/Apparat_Goodbye_P2_features.json";
@@ -367,12 +367,25 @@ class drawSkelethon {
 }
 
 function drawFod(index){
-  fod = (data_in.data[index].keypoints_fod.distance_total-5000)*0.05
+
   let marker = width/data_in.data.length
   let lineIndex = index*marker
   strokeWeight(1);
-  stroke(255, 255, 255, 100)
-  line(lineIndex, height, lineIndex, height-fod)
+
+  let fodMax = 0;
+  let color_k = 25
+  let previousFod = height;
+
+  for (let index_k = 0; index_k < data_in.data[index].keypoints_fod.keypoints.length; index_k++) {
+    let fod = data_in.data[index].keypoints_fod.keypoints[index_k].distance*0.02
+
+    stroke(setColor(index_k, 0.2))
+
+    line(lineIndex, previousFod, lineIndex, previousFod-fod)
+    previousFod = previousFod-fod;
+  }
+  
+  
 }
 
 function trailLenght(frameRate, seconds){
