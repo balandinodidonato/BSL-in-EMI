@@ -7,7 +7,7 @@ from datetime import timedelta
 participant = str(sys.argv[1])
 song = str(sys.argv[2])
 data_file_path = sys.argv[3]
-frameRate = float(sys.argv[4]) # framerate
+frameRate = 30
 
 # Opening JSON file
 with open(data_file_path, 'r') as f:
@@ -141,6 +141,11 @@ for keypoints_index in range(0, len(pose_keypoints_2d)):
 
     previous = keypoints
     segments.append(segment_data)
+
+
+# Hands data feature extraction
+
+
 
 
 original_data_lenght = (len(original_data["data"]))
