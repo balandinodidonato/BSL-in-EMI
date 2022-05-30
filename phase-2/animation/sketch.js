@@ -352,15 +352,15 @@ class drawSkelethon {
 
     if(this.k0[0]>0 && this.k0[1]>0 && this.k1[0]>0 && this.k1[1]>0){
       stroke(setColor(this.col, this.alpha))
-      strokeWeight(4)
+      strokeWeight(10*scaleSize)
       fill(setColor(this.col, this.alpha))
 
       if (this.lines) {
         line(this.k0[0]*scaleSize, this.k0[1]*scaleSize, this.k1[0]*scaleSize, this.k1[1]*scaleSize)
       }
       if (this.ellipses) {
-        ellipse(this.k0[0]*scaleSize, this.k0[1]*scaleSize, 4, 4)
-        ellipse(this.k1[0]*scaleSize, this.k1[1]*scaleSize, 4, 4)
+        ellipse(this.k0[0]*scaleSize, this.k0[1]*scaleSize, 10*scaleSize, 10*scaleSize)
+        ellipse(this.k1[0]*scaleSize, this.k1[1]*scaleSize, 10*scaleSize, 10*scaleSize)
       }
     }
   }
