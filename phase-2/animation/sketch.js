@@ -1,5 +1,5 @@
 
-const scaleSize = 0.5
+const scaleSize = 1
 let frame_i = 0;
 let mySound;
 let dataPath = "../analysis/motion/data/Apparat_Goodbye_P2_features.json";
@@ -13,6 +13,7 @@ let leftHandDrawing = []
 let rightHandDrawing = []
 let trail = false
 let trailLength
+let playbackrate = 1;
 
 function preload(){
   mySound = loadSound(soundPath);
@@ -43,21 +44,35 @@ function draw() {
 
   fill(200)
   
+  /*
   if (frame_i>trailLength) {
     trail = true
   }
+  */
 
+  
   if(frame_i < data_in.data.length){
 
-    if(frame_i<1) mySound.play()
-
+    // sincs audio playback rate to visualisation
+    if (frame_i<1) mySound.play()
+    playbackrate = getFrameRate()/data_in.frameRate
+    if (playbackrate < 100) mySound.rate(playbackrate)
+  
     textSize(40*scaleSize)
-    text(title + "  " + str(data_in.data[frame_i].time), 10, 20, width, 200)
+    text(title +  "        FPS: " + str(int(getFrameRate()))  + "        Time: " + str(data_in.data[frame_i].time), 10, 20, width, 200)
 
     drawFullSkelethon();
     drawFod(frame_i);
   }
   frame_i++;
+
+  if(playbackrate == 0) {
+    playbackrate = 1
+  }
+  else {
+    
+    
+  }
 }
 
 
@@ -65,16 +80,35 @@ function draw() {
 
 function drawFullSkelethon(){
 
-  for (let key_i = 0; key_i < skelethonDrawing[frame_i].length; key_i++) {
-    skelethonDrawing[frame_i][key_i].show(1)
-  }
-
   if(trail){
     for (let index_trail = 0; index_trail < trailLength; index_trail++) {
       for (let key_i = 0; key_i < skelethonDrawing[frame_i].length; key_i++) {
         skelethonDrawing[frame_i-index_trail][key_i].show(1/index_trail)
       }
     }
+    /*
+    for (let index_trail = 0; index_trail < trailLength; index_trail++) {
+      for (let key_i = 0; key_i < leftHandDrawing[frame_i].length; key_i++) {
+        leftHandDrawing[frame_i-index_trail][key_i].show(1/index_trail)
+      }
+    }
+
+    for (let index_trail = 0; index_trail < trailLength; index_trail++) {
+      for (let key_i = 0; key_i < rightHandDrawing[frame_i].length; key_i++) {
+        rightHandDrawing[frame_i-index_trail][key_i].show(1/index_trail)
+      }
+    }
+    
+    for (let index_trail = 0; index_trail < trailLength; index_trail++) {
+      for (let key_i = 0; key_i < faceDrawing[frame_i].length; key_i++) {
+        faceDrawing[frame_i-index_trail][key_i].show(1/index_trail)
+      }
+    }
+    */
+  }
+
+  for (let key_i = 0; key_i < skelethonDrawing[frame_i].length; key_i++) {
+    skelethonDrawing[frame_i][key_i].show(1)
   }
 
   for (let key_i = 0; key_i < faceDrawing[frame_i].length; key_i++) {
@@ -318,27 +352,40 @@ class drawSkelethon {
 
     if(this.k0[0]>0 && this.k0[1]>0 && this.k1[0]>0 && this.k1[1]>0){
       stroke(setColor(this.col, this.alpha))
-      strokeWeight(4)
+      strokeWeight(10*scaleSize)
       fill(setColor(this.col, this.alpha))
 
       if (this.lines) {
         line(this.k0[0]*scaleSize, this.k0[1]*scaleSize, this.k1[0]*scaleSize, this.k1[1]*scaleSize)
       }
       if (this.ellipses) {
-        ellipse(this.k0[0]*scaleSize, this.k0[1]*scaleSize, 4, 4)
-        ellipse(this.k1[0]*scaleSize, this.k1[1]*scaleSize, 4, 4)
+        ellipse(this.k0[0]*scaleSize, this.k0[1]*scaleSize, 10*scaleSize, 10*scaleSize)
+        ellipse(this.k1[0]*scaleSize, this.k1[1]*scaleSize, 10*scaleSize, 10*scaleSize)
       }
     }
   }
 }
 
 function drawFod(index){
-  fod = (data_in.data[index].keypoints_fod.distance_total-5000)*0.05
+
   let marker = width/data_in.data.length
   let lineIndex = index*marker
   strokeWeight(1);
-  stroke(255, 255, 255, 100)
-  line(lineIndex, height, lineIndex, height-fod)
+
+  let fodMax = 0;
+  let color_k = 25
+  let previousFod = height;
+
+  for (let index_k = 0; index_k < data_in.data[index].keypoints_fod.keypoints.length; index_k++) {
+    let fod = data_in.data[index].keypoints_fod.keypoints[index_k].distance*0.02
+
+    stroke(setColor(index_k, 0.2))
+
+    line(lineIndex, previousFod, lineIndex, previousFod-fod)
+    previousFod = previousFod-fod;
+  }
+  
+  
 }
 
 function trailLenght(frameRate, seconds){
