@@ -47,7 +47,7 @@ participant = str(sys.argv[1])
 song = str(sys.argv[2])
 face_file_path = sys.argv[3] # Path to face data set
 hand_file_path = sys.argv[4] # Path to face data set
-FPS = float(sys.argv[5]) # framerate
+FPS = 30
 
 # Lists and variables
 pose_keypoints_2d = []

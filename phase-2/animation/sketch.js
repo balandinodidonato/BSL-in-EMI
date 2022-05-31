@@ -2,7 +2,7 @@
 const scaleSize = 1
 let frame_i = 0;
 let mySound;
-let dataPath = "../analysis/motion/data/Apparat_Goodbye_P2_features.json";
+let dataPath = "../analysis/motion/data/Apparat_Goodbye_P1_features.json";
 let title = "P1 Apparat - Goodbye";
 let soundPath = "../media/audio/Apparat_Goodbye.mp3"
 let animationWidth;
