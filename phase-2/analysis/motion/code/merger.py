@@ -189,7 +189,7 @@ if(len(pose_keypoints_2d)==len(hand_left_keypoints_2d)==len(hand_right_keypoints
         "framerate":FPS
         }
         
-    filename = "../data/" + song + "_" + participant + ".json"
+    filename = "./data/" + song + "_" + participant + ".json"
     with open(filename, 'w') as f:
         json.dump(data_out, f)
 
