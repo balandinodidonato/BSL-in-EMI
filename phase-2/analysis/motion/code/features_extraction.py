@@ -62,10 +62,10 @@ lwrist_nose_distances = []
 rwrist_nose_distances = []
 
 for keypoints in pose_keypoints_2d:
-    wrist_0_x = keypoints[4][0]
-    wrist_0_y = keypoints[4][1]
-    wrist_1_x = keypoints[7][0]
-    wrist_1_y = keypoints[7][1]
+    wrist_0_x = keypoints[4][0] # right
+    wrist_0_y = keypoints[4][1] # right
+    wrist_1_x = keypoints[7][0] # left
+    wrist_1_y = keypoints[7][1] # left
     nose_x = keypoints[0][0]
     nose_y = keypoints[0][1]    
 
@@ -76,16 +76,16 @@ for keypoints in pose_keypoints_2d:
     wrists_distances.append({"wrists_distance":wrists_distance, "wrists_distance":wrists_angle_degrees})
 
     # wrist 0 nose disance/angle
-    lwrist_nose_distance = math.sqrt(pow((nose_x-wrist_0_x),2)+pow((nose_y-wrist_0_y),2))
-    lwrist_nose_angle_radians = math.atan2(wrist_0_x-nose_x, wrist_0_y-nose_y)
-    lwrist_nose_angle_degrees = math.degrees(lwrist_nose_angle_radians)
-    lwrist_nose_distances.append({"keypoint_no":keypoints_IDs[4][0],"keypoint_name":keypoints_IDs[4][1], "lwrist_nose_distance":lwrist_nose_distance, "lwrist_nose_angle_degrees":lwrist_nose_angle_degrees})
+    rwrist_nose_distance = math.sqrt(pow((nose_x-wrist_0_x),2)+pow((nose_y-wrist_0_y),2))
+    rwrist_nose_angle_radians = math.atan2(wrist_0_x-nose_x, wrist_0_y-nose_y)
+    rwrist_nose_angle_degrees = math.degrees(rwrist_nose_angle_radians)
+    rwrist_nose_distances.append({"keypoint_no":keypoints_IDs[4][0],"keypoint_name":keypoints_IDs[4][1], "r_wrist_nose_distance":rwrist_nose_distance, "r_wrist_nose_angle_degrees":rwrist_nose_angle_degrees})
 
     # wrist 0 nose disance/angle
-    rwrist_nose_distance = math.sqrt(pow((nose_x-wrist_1_x),2)+pow((nose_y-wrist_1_y),2))
-    rwrist_nose_angle_radians = math.atan2(wrist_1_x-nose_x, wrist_1_y-nose_y)
-    rwrist_nose_angle_degrees = math.degrees(rwrist_nose_angle_radians)
-    rwrist_nose_distances.append({"keypoint_no":keypoints_IDs[7][0],"keypoint_name":keypoints_IDs[7][1],"r_wrist_nose_distance":rwrist_nose_distance, "r_wrist_nose_distance":rwrist_nose_distance})
+    lwrist_nose_distance = math.sqrt(pow((nose_x-wrist_1_x),2)+pow((nose_y-wrist_1_y),2))
+    lwrist_nose_angle_radians = math.atan2(wrist_1_x-nose_x, wrist_1_y-nose_y)
+    lwrist_nose_angle_degrees = math.degrees(lwrist_nose_angle_radians)
+    lwrist_nose_distances.append({"keypoint_no":keypoints_IDs[7][0],"keypoint_name":keypoints_IDs[7][1],"l_wrist_nose_distance":lwrist_nose_distance, "l_wrist_nose_distance":lwrist_nose_distance})
 
 # ------ Directions ------ #
 def direction(x0, y0, x1, y1):
@@ -182,7 +182,7 @@ if (original_data_lenght == len(pose_fod) == len(wrists_distances) == len(lwrist
         "song":song
         }
 
-    filename = "../data/" + song + "_" + participant + "_features.json"
+    filename = "./data/" + song + "_" + participant + "_features.json"
     with open(filename, 'w') as f:
         json.dump(final_out, f)
 
