@@ -77,8 +77,14 @@ def reorder(path):
 reorder(face_file_path)
 reorder(hand_file_path)
 
+indexMax = int(no_of_files/2)
+print(indexMax)
+
 # Extract and append data
-for index in range(0, no_of_files-1):
+for index in range(0, indexMax):
+    print(index)
+    print(indexMax)
+    print('--------------')
     currentFacePath = str(face_file_path+"/"+song+"_"+participant+"_"+str(index)+"_keypoints.json")
     with open(currentFacePath, 'r') as f:
         data = json.load(f)
