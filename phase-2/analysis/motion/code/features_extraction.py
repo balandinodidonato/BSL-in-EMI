@@ -44,12 +44,13 @@ for keypoints in pose_keypoints_2d:
     fod_keypoints_frame = []
     distance_total = 0
     angle_total = 0
+    
     for index in range(0, len(keypoints)):
         pose_fod_dist = fod(previous[index][0], keypoints[index][0], previous[index][1], keypoints[index][0])
         angle_radians = math.atan2(keypoints[index][0]-previous[index][0], keypoints[index][1]-previous[index][0])
         angle_degrees = math.degrees(angle_radians)
         distance_total = distance_total + pose_fod_dist
-        angle_total = angle_total + angle_degrees
+        angle_total = angle_total + abs(angle_degrees)
 
         fod_keypoints_frame.append({"keypoint_no":keypoints_IDs[index][0],"keypoint_name":keypoints_IDs[index][1], "distance":pose_fod_dist, "angle":angle_degrees})
 
