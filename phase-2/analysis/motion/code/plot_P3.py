@@ -23,6 +23,8 @@ qom_angle_3D = []
 frame_count_3D = []
 time_3D = []
 
+raw_wrists_shoulders_3A = []
+
 def fill_lists_p3():
 
     with open('data/Apparat_Goodbye_P3_features.json', 'r') as f:
@@ -40,7 +42,9 @@ def fill_lists_p3():
         #LWrist_nose_distance_3A.append(keypoint['keypoints_LWrist_nose_distance_angle']['l_wrist_nose_distance'])
         #LWrist_nose_angle_3A.append(keypoint['keypoints_LWrist_nose_distance_angle']['l_wrist_nose_distance'])
         #direction_3A.append(keypoint['keypoints_direction'])
-        qom_3A.append(keypoint['keypoints_delta']['delta_total'])
+        qom_3A.append(keypoint['delta_mavg'])
+        raw_wrists_shoulders_3A.append(keypoint['raw_wrists_shoulders']['raw_r_wrist'][1])
+
         #qom_angle_3A.append(keypoint['keypoints_fod']['angle_total'])
 
   #  for keypoint in original_data_3D['data']:

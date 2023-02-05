@@ -22,6 +22,7 @@ qom_1D = []
 qom_angle_1D = []
 frame_count_1D = []
 time_1D = []
+raw_wrists_shoulders_1A = []
 
 def fill_lists_p1():
 
@@ -42,6 +43,7 @@ def fill_lists_p1():
         #LWrist_nose_angle_1A.append(keypoint['keypoints_LWrist_nose_distance_angle']['l_wrist_nose_distance'])
         #direction_1A.append(keypoint['keypoints_direction'])
         qom_1A.append(keypoint['delta_mavg'])
+        raw_wrists_shoulders_1A.append(keypoint['raw_wrists_shoulders']['raw_r_wrist'][1])
         #qom_angle_1A.append(keypoint['keypoints_fod']['angle_total'])
 
    # for keypoint in original_data_1D['data']:

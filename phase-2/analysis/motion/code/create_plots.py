@@ -19,7 +19,7 @@ fill_lists_p3()
 # Apparat - Goodbye
 plt.figure(figsize=(2000/my_dpi, 720/my_dpi), dpi=my_dpi)
 
-plt.title('Participant no. '+participant_no)
+plt.title(plots)
 plt.xlabel('Frames')
 plt.ylabel('Pixels')
 
@@ -27,11 +27,8 @@ plt.ylabel('Pixels')
 
 if song == 'A' or song == 'both':
     if plots == 'qom':
-        if participant_no == '1' or participant_no == '1_2' or participant_no == '1_3' or participant_no == '1_2_3':
             plt.plot(frame_count_1A, qom_1A, label='1A -Overall QoM')
-        if participant_no == '2' or participant_no == '1_2' or participant_no == '2_3' or participant_no == '1_2_3':
             plt.plot(frame_count_2A, qom_2A, label='2A -Overall QoM')
-        if participant_no == '3' or participant_no == '1_3' or participant_no == '2_3' or participant_no == '1_2_3':
             plt.plot(frame_count_3A, qom_3A, label='3A -Overall QoM')
 
     elif plots == 'wrists':
@@ -57,11 +54,8 @@ if song == 'A' or song == 'both':
 elif song == 'D' or song == 'both':
     # Daft Punk - Crecendools
     if plots == 'qom':
-        if participant_no == '1' or participant_no == '1_2' or participant_no == '1_3' or participant_no == '1_2_3':
             plt.plot(frame_count_1D, qom_1D, label='1D -Overall QoM')
-        if participant_no == '2' or participant_no == '1_2' or participant_no == '2_3' or participant_no == '1_2_3':
             plt.plot(frame_count_2D, qom_2D, label='2D -Overall QoM')
-        if participant_no == '3' or participant_no == '1_3' or participant_no == '2_3' or participant_no == '1_2_3': 
             plt.plot(frame_count_3D, qom_3D, label='3D -Overall QoM')
 
     elif plots == 'wrists':
