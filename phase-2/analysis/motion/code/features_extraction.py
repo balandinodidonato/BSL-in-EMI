@@ -130,7 +130,7 @@ for keypoints in pose_keypoints_2d:
     wrists_delta = math.sqrt(pow((wrist_1_x-wrist_0_x),2)+pow((wrist_1_y-wrist_0_y),2))
     wrists_angle_radians = math.atan2(wrist_0_x-wrist_1_x, wrist_0_y-wrist_1_y)
     wrists_angle_degrees = math.degrees(wrists_angle_radians)
-    wrists_deltas.append({"wrists_delta":wrists_delta, "wrists_delta":wrists_angle_degrees})
+    wrists_deltas.append({"wrists_delta":wrists_delta, "wrists_angle":wrists_angle_degrees})
 
     # wrist 0 nose disance/angle
     rwrist_nose_delta = math.sqrt(pow((nose_x-wrist_0_x),2)+pow((nose_y-wrist_0_y),2))
@@ -208,7 +208,6 @@ original_data_lenght = (len(original_data["data"]))
 
 
 quantityOfMotion = []
-deltaMavg = []
 
 # Creates files
 if (original_data_lenght == len(pose_delta) == len(wrists_deltas) == len(lwrist_nose_deltas) == len(segments)): # checks that no data were lost
@@ -229,10 +228,10 @@ if (original_data_lenght == len(pose_delta) == len(wrists_deltas) == len(lwrist_
         # moving averages
         mavgWindowSize = 10
         if frame<mavgWindowSize:
-            deltaMavg.append(int(0))
+            deltaMavg = 0
 
         if frame > mavgWindowSize-1:
-            deltaMavg.append(mavg(frame, quantityOfMotion, mavgWindowSize))
+            deltaMavg = mavg(frame, quantityOfMotion, mavgWindowSize)
             
 
         data_out.append({
@@ -241,18 +240,16 @@ if (original_data_lenght == len(pose_delta) == len(wrists_deltas) == len(lwrist_
             "time":td,
             "raw":raw,
             "keypoints_delta":keypoints_delta, 
-            "keypoints_wrists_delta_angle":keypoints_wrists_delta, 
-            "keypoints_LWrist_nose_delta_angle":keypoints_LWrist_nose_delta,
-            "keypoints_RWrist_nose_delta_angle":keypoints_RWrist_nose_delta, 
+            "keypoints_wrists_delta":keypoints_wrists_delta, 
+            "keypoints_LWrist_nose_delta":keypoints_LWrist_nose_delta,
+            "keypoints_RWrist_nose_delta":keypoints_RWrist_nose_delta, 
             "keypoints_direction":keypoints_direction, # segment_change, direction_text, delta_angle, angle_degrees
             "raw_wrists_shoulders": raw_wrists_shoulders,
-            "delta_mavg": deltaMavg
+            "delta_mavg": deltaMavg,
             })
- 
-    
-    print(deltaMavg)
-
+     
     final_out = {
+        
         "data":data_out, 
         "frameRate":frameRate,
         "participant":participant, 

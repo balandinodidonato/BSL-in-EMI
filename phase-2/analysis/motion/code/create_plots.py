@@ -23,6 +23,8 @@ plt.title('Participant no. '+participant_no)
 plt.xlabel('Frames')
 plt.ylabel('Pixels')
 
+
+
 if song == 'A' or song == 'both':
     if plots == 'qom':
         if participant_no == '1' or participant_no == '1_2' or participant_no == '1_3' or participant_no == '1_2_3':
