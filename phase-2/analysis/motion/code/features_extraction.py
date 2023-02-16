@@ -113,7 +113,7 @@ for keypoints in pose_keypoints_2d:
     previous = keypoints
 
 
-# ------ Distances ------ #
+# ------ Delta ------ #
 wrists_deltas = []
 lwrist_nose_deltas = []
 rwrist_nose_deltas = []
@@ -209,6 +209,23 @@ original_data_lenght = (len(original_data["data"]))
 
 quantityOfMotion = []
 
+deltaJointTotal = []
+deltaTotal = 0
+
+for frame in range(original_data_lenght):
+    deltaJointFrame = []
+    for joint in pose_delta[frame]['keypoints']:
+        deltaJointFrame.append(joint['delta'])
+        deltaTotal += joint['delta']
+    deltaJointTotal.append(deltaJointFrame)
+
+deltaJoints = []
+for jointIndex in range(25):
+    deltaJoint = 0
+    for deltaFrame in deltaJointTotal:
+        deltaJoint += deltaFrame[jointIndex]
+    deltaJoints.append(deltaJoint)
+
 # Creates files
 if (original_data_lenght == len(pose_delta) == len(wrists_deltas) == len(lwrist_nose_deltas) == len(segments)): # checks that no data were lost
     for frame in range(original_data_lenght):
@@ -253,7 +270,9 @@ if (original_data_lenght == len(pose_delta) == len(wrists_deltas) == len(lwrist_
         "data":data_out, 
         "frameRate":frameRate,
         "participant":participant, 
-        "song":song
+        "song":song,
+        "deltaTotal":deltaTotal,
+        "deltaTotalJoints":deltaJoints
         }
     
     filename = "./data/" + song + "_" + participant + "_features.json"
