@@ -21,11 +21,27 @@ plt.figure(figsize=(2000/my_dpi, 720/my_dpi), dpi=my_dpi)
 
 plt.title(plots)
 plt.xlabel('Frames')
-plt.ylabel('Pixels')
+plt.ylabel('Pixels')    
 
 
 
 if song == 'A' or song == 'both':
+
+    if plots == 'totalDelta':
+        names = ['P1', 'P2', 'P3']
+        values = [totalDelta1A, totalDelta2A, totalDelta3A]
+        print(values)
+        plt.bar(names, values, label='Total delta')
+        plt.legend()
+        plt.show()
+        plt.savefig('./plot/'+plots+'_P'+participant_no+'_'+song+'_TotalDelta.png', bbox_inches='tight')
+
+    #    names = ['P1', 'P2', 'P3']
+    #    values = [jointsDelta1A, jointsDelta2A, jointsDelta3A]
+    #    plt.bar(names, values, label='Total delta')
+    #    plt.legend()
+    #    plt.savefig('./plot/'+plots+'_P'+participant_no+'_'+song+'_TotalJointDelta.png', bbox_inches='tight')
+
     if plots == 'qom':
             plt.plot(frame_count_1A, qom_1A, label='1A -Overall QoM')
             plt.plot(frame_count_2A, qom_2A, label='2A -Overall QoM')
@@ -74,6 +90,6 @@ elif song == 'D' or song == 'both':
             plt.plot(frame_count_2D, RWrist_nose_distance_2D, label='3D - R wrist-nose distance')
             plt.plot(frame_count_2D, LWrist_nose_distance_2D, label='3D - L wrist-nose distance')
 
-    plt.legend()
-    plt.savefig('./plot/'+plots+'_P'+participant_no+'D.png', bbox_inches='tight')
+  #  plt.legend()
+  #  plt.savefig('./plot/'+plots+'_P'+participant_no+'D.png', bbox_inches='tight')
 
