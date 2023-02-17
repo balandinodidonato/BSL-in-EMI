@@ -24,7 +24,12 @@ for songsData in songsFeatures:
 #print(songsDeltas)
 if plots == '0':
     for index in range(6):
-        plt.bar(SPstringRed[index], songsDeltas[index])
+        plt.bar(SPstringRed[index], songsDeltas[index], color='b')
+        plt.ylim(0, 70000000)
+        plt.yticks([0, 2000000, 4000000, 6000000, 7000000])
+        plt.title('Total delta') 
+        plt.ylabel('Keypoint Delta / Frame')
+        plt.xlabel('Interpretation')
     plt.savefig('./plot/deltaTotalParticipant.png')
 
 if plots == '1':
