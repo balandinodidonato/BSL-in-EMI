@@ -2,6 +2,7 @@ import json, sys
 import math
 from turtle import down
 from datetime import timedelta
+import numpy as np
 
 # Gather file path
 participant = str(sys.argv[1])
@@ -86,7 +87,10 @@ previous = pose_keypoints_2d[0]
 for keypoints in pose_keypoints_2d:
     delta_keypoints_frame = []
     delta_total = 0
+    delta_std = 0
+
     angle_total = 0
+    
     mav = []
     for index in range(len(keypoints)):
         pose_delta_dist = delta(previous[index][0], keypoints[index][0], previous[index][1], keypoints[index][0])
@@ -105,6 +109,7 @@ for keypoints in pose_keypoints_2d:
 
     pose_delta.append({
         "delta_total":delta_total, 
+        "delta_avg":delta_total/len(keypoints),
         "angle_total":angle_total, 
         "keypoints": delta_keypoints_frame
         })
@@ -250,6 +255,7 @@ if (original_data_lenght == len(pose_delta) == len(wrists_deltas) == len(lwrist_
         if frame > mavgWindowSize-1:
             deltaMavg = mavg(frame, quantityOfMotion, mavgWindowSize)
             
+        delta_avg = deltaTotal/original_data_lenght
 
         data_out.append({
             "time":td,
@@ -267,11 +273,13 @@ if (original_data_lenght == len(pose_delta) == len(wrists_deltas) == len(lwrist_
      
     final_out = {
         
-        "data":data_out, 
+        "data":data_out,
+        "totalFrames": original_data_lenght,
         "frameRate":frameRate,
         "participant":participant, 
         "song":song,
         "deltaTotal":deltaTotal,
+        "deltaAvg":delta_avg,
         "deltaTotalJoints":deltaJoints
         }
     

@@ -6,16 +6,18 @@ import numpy as np
 
 plots = int(sys.argv[1])
 songsDeltas = []
+songsDeltasAvg = []
 songsJointsDelta = []
 songsJointsNames = []
 songsFrames = []
+noFrames = []
 shoulderX = []
 rawWristShoulders = []
 index = 0
 dataFrames = []
 songRaw = []
 
-if plots < 7:
+if plots < 8:
     loadJSONFiles()
 
     for index in range(6):
@@ -23,16 +25,18 @@ if plots < 7:
 
     for songsData in songsFeatures:
         songsDeltas.append(songsData['deltaTotal'])
+        songsDeltasAvg.append(songsData['deltaAvg'])
         songsJointsDelta.append(songsData['deltaTotalJoints'])
         dataFrames.append(songsData['data'])
+        noFrames.append(songsData['totalFrames'])
 
-    for rawDataSong in dataFrames:
-        rawFramesDataSong = []
-        for rawFramesData in rawDataSong['data']:
-            rawFramesDataSong.append(rawFramesData['raw_wrists_shoulders'])
-        songRaw.append(rawFramesDataSong)
+    #for rawDataSong in dataFrames:
+    #    rawFramesDataSong = []
+    #    for rawFramesData in rawDataSong['data']:
+    #        rawFramesDataSong.append(rawFramesData['raw_wrists_shoulders'])
+    #    songRaw.append(rawFramesDataSong)
 
-    print(songRaw[0][0])
+#    print(songRaw[0][0])
 
   #  print(rawWristShoulders[0])
 
@@ -136,4 +140,36 @@ if plots == 5:
     plt.savefig('./plot/deltaTotalJointsStack_Songs.png')
     plt.show()
 
-#if plots == 6:
+if plots == 6:
+    for index in range(6):
+        plt.ylim(0, 9000)
+        #plt.yticks([0, 1000000, 20000000, 30000000, 40000000, 50000000, 60000000, 70000000])
+        plt.bar(SPstringRed[index], songsDeltasAvg[index], color=colors[index])
+        plt.grid(visible=True, axis='y', alpha=0.5)
+        #plt.title('AVG delta') 
+        plt.ylabel('Body keypoint delta AVG / song')
+        plt.xlabel('Interpretation')
+    plt.savefig('./plot/deltaAVGParticipant.png')
+    plt.show()
+
+if plots == 7:
+    figure, axis = plt.subplots(6, 1, figsize=(7,10))
+    
+    for index in range(6):
+
+        data = np.array(songsJointsDelta[index])/np.array(noFrames[index])
+
+        axis[index].bar(jointID, data, color=rgb01)
+        axis[index].set_title(SPstring[index]) 
+        axis[index].set_ylim(0, 1000)
+  #      axis[index].set_yticks([0, 2000000, 4000000, 6000000, 8000000])
+
+        axis[index].set_ylabel('AVG Kpnt Delta')
+        axis[index].set_xlabel('Keypoints')
+        index += 1
+        index %= 6    
+
+    plt.title('Interpreations delta') 
+    plt.subplots_adjust(left=0.1, bottom=0.05, right=0.95, top=0.95, wspace=0.2, hspace=1)
+    plt.savefig('./plot/deltaAVGJoints.png')
+    plt.show()
