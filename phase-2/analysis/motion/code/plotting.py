@@ -108,35 +108,54 @@ if plots == 4:
         axis[index].set_xlabel('Keypoints')
         axis[index].grid(visible=True, axis='y', alpha=0.5)
 
-
+    
     plt.subplots_adjust(left=0.1, bottom=0.05, right=0.95, top=0.95, wspace=0.2, hspace=0.5)
     plt.savefig('./plot/deltaTotalJointsStack_Participants.png')
 
-
 if plots == 5:
-    figure, axis = plt.subplots(2, 1, figsize=(9,7))
-    y = np.array(songsJointsDelta)
+    plt.rc('font', size=12)
 
-    axis[0].bar(jointID, y[0], label='P1', color=rgb01)
-    axis[0].bar(jointID, y[1], label='P2', bottom=y[0], color=rgb01*0.6)
-    axis[0].bar(jointID, y[2], label='P3', bottom=y[0]+y[1], color=rgb01*0.3)
+    figure, axis = plt.subplots(2, 1, figsize=(9,9))
+    y = []
+    kToOmit = [24, 23, 22, 21, 20, 19, 14, 13]
 
-    axis[1].bar(jointID, y[3], label='P1', color=rgb01)
-    axis[1].bar(jointID, y[4], label='P2', bottom=y[3], color=rgb01*0.6)
-    axis[1].bar(jointID, y[5], label='P3', bottom=y[3]+y[4], color=rgb01*0.3)
+    for idx in range(6):
+        for test in kToOmit:
+            songsJointsDelta[idx].pop(test)
+           # songsJointsDelta[idx].pop(11)
     
-    for index in range(2):
+        y.append(np.array(songsJointsDelta[idx])/np.array(noFrames[idx]))
+
+
+
+    for test2 in kToOmit:
+        jointID.pop(test2)
+
+   # jointID.pop(11)
+    
+    axis[0].bar(jointID, y[0], label='P1', color='r')
+    axis[0].bar(jointID, y[1], label='P2', bottom=y[0], color='g')
+    axis[0].bar(jointID, y[2], label='P3', bottom=y[0]+y[1], color='b')
+
+    axis[1].bar(jointID, y[3], label='P1', color='r')
+    axis[1].bar(jointID, y[4], label='P2', bottom=y[3], color='g')
+    axis[1].bar(jointID, y[5], label='P3', bottom=y[3]+y[4], color='b')
+    
+    for index in range(0, 2):
+        
        # axis[index].set_label(songsTitle)
-        axis[index].legend()
-        axis[index].set_title(songsTitleFull[index]) 
-        axis[index].set_ylim(0, 18000000)
-        axis[index].set_yticks([0, 2000000, 4000000, 6000000, 8000000, 10000000, 12000000, 14000000, 16000000, 18000000])
-        axis[index].set_ylabel('Delta (Pixesls)')
+        #axis[index].legend()
+        plt.rc('font', size=12)
+        axis[index].set_title(songsTitle[index]) 
+       # axis[index].set_ylim(0, 2500)
+     #   axis[index].set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18])
+        plt.rc('font', size=9)
+        axis[index].set_ylabel('Tot. QoM (pixesls) / Song Frames No.')
         axis[index].set_xlabel('Keypoints')
         axis[index].grid(visible=True, axis='y', alpha=0.5)
 
     #plt.title('Particiapnts\' Kpnt Delta vs Songs')
-    plt.subplots_adjust(left=0.1, bottom=0.1, right=0.95, top=0.95, wspace=0.2, hspace=0.3) 
+    plt.subplots_adjust(left=0.1, bottom=0.1, right=0.95, top=0.95, wspace=0.2, hspace=0.4) 
     plt.savefig('./plot/deltaTotalJointsStack_Songs.png')
     plt.show()
 
@@ -147,11 +166,13 @@ if plots == 6:
         plt.bar(SPstringRed[index], songsDeltasAvg[index], color=colors[index])
         plt.grid(visible=True, axis='y', alpha=0.5)
         #plt.title('AVG delta') 
-        plt.ylabel('Body keypoint delta AVG / song')
+        plt.ylabel('Body keypoint delta (Pixels)')
         plt.xlabel('Interpretation')
     plt.savefig('./plot/deltaAVGParticipant.png')
     plt.show()
 
+
+# average of
 if plots == 7:
     figure, axis = plt.subplots(6, 1, figsize=(7,10))
     
@@ -159,17 +180,18 @@ if plots == 7:
 
         data = np.array(songsJointsDelta[index])/np.array(noFrames[index])
 
+
         axis[index].bar(jointID, data, color=rgb01)
         axis[index].set_title(SPstring[index]) 
         axis[index].set_ylim(0, 1000)
   #      axis[index].set_yticks([0, 2000000, 4000000, 6000000, 8000000])
 
-        axis[index].set_ylabel('AVG Kpnt Delta')
+        axis[index].set_ylabel('QoM AVG (pxl)')
         axis[index].set_xlabel('Keypoints')
         index += 1
         index %= 6    
 
-    plt.title('Interpreations delta') 
+    #plt.title('Interpreations delta') 
     plt.subplots_adjust(left=0.1, bottom=0.05, right=0.95, top=0.95, wspace=0.2, hspace=1)
     plt.savefig('./plot/deltaAVGJoints.png')
     plt.show()
