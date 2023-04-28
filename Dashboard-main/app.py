@@ -236,9 +236,9 @@ def update_graph(value1, value2, value3):
         y = data['body'][keypoint][1]
         traces.append(go.Scatter(x=x, y=1080-y, mode='markers', name=keypoint, marker=dict(opacity=0.5)))
         layout = go.Layout(
-            title='Scatter Plot with Checklists',
-            xaxis=dict(title='X-axis', range=[0, 1920]),
-            yaxis=dict(title='Y-axis', range=[0, 1080]),
+            title='Heatmap of Selected Keypoint Data',
+            xaxis=dict(title='Horizontal Movement', range=[0, 1920]),
+            yaxis=dict(title='Vertical Movement', range=[0, 1080]),
         )
     return {'data': traces, 'layout': layout}
 
@@ -264,7 +264,7 @@ def save_uploaded_files(n_clicks, filenames, contents):
             html.P(f"File {filename} uploaded successfully") for filename in filenames
         ])
         
-# Wave form
+# Waveform Callback
 
 @app.callback(
     Output('waveform', 'figure'),
@@ -281,7 +281,7 @@ def makeWaveFormGraph(value):
                yaxis_title='Amplitude')
         return fig    
     
-    #deltas call back
+    #Deltas Callback
 @app.callback(
     Output('deltas', 'figure'),
     Input('bodyKeypoints', 'value'),
@@ -298,7 +298,7 @@ def deltas(value1, value2, value3):
         y.append(sum(abs(getDeltaFromPositions(data['body'][keypoint])[1])))
         traces.append(go.Bar(x=x, y=y, name=keypoint))
         layout = go.Layout(
-            title='Scatter Plot with Checklists')
+            title='Sum of Selected Keypoint Delta')
     return {'data': traces, 'layout': layout}
 
 @app.callback(
